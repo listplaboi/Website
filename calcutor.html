@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Calculator</title>
+  <style>
+    :root{--bg:#f3f6fb;--panel:#fff;--accent:#0b62d6;--muted:#6b7280}
+    body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:28px;display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .calculator{width:320px;background:var(--panel);border-radius:12px;box-shadow:0 8px 30px rgba(12,20,40,0.08);overflow:hidden}
+    .header{padding:16px 18px;border-bottom:1px solid #eef4ff}
+    .header h1{margin:0;font-size:18px;color:var(--accent)}
+    .header p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+    .display{background:#0f1724;color:#fff;padding:18px 16px;font-size:20px;text-align:right;letter-spacing:0.4px}
+    .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px;background:transparent}
+    button.key{padding:16px;font-size:16px;border:0;border-radius:8px;background:#f1f5f9;cursor:pointer}
+    button.key.operator{background:#0b62d6;color:#fff}
+    button.key.equal{grid-column:span 2;background:#0b62d6;color:#fff}
+    button.key.clear{background:#ff5c5c;color:#fff}
+    button.key:active{transform:translateY(1px)}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="calculator" role="application" aria-label="Simple calculator">
+    <div class="header">
+      <h1>Calculator</h1>
+      <p class="small">A simple calculator — supports +, −, ×, ÷, decimals and keyboard input.</p>
+    </div>
+
+    <div id="display" class="display" aria-live="polite">0</div>
+
+    <div class="keys" role="group" aria-label="Calculator buttons">
+      <button class="key clear" data-action="clear">C</button>
+      <button class="key" data-action="back">⌫</button>
+      <button class="key" data-action="percent">%</button>
+      <button class="key operator" data-value="/">÷</button>
+
+      <button class="key" data-value="7">7</button>
+      <button class="key" data-value="8">8</button>
+      <button class="key" data-value="9">9</button>
+      <button class="key operator" data-value="*">×</button>
+
+      <button class="key" data-value="4">4</button>
+      <button class="key" data-value="5">5</button>
+      <button class="key" data-value="6">6</button>
+      <button class="key operator" data-value="-">−</button>
+
+      <button class="key" data-value="1">1</button>
+      <button class="key" data-value="2">2</button>
+      <button class="key" data-value="3">3</button>
+      <button class="key operator" data-value="+">+</button>
+
+      <button class="key" data-value="0">0</button>
+      <button class="key" data-value=".">.</button>
+      <button class="key equal" data-action="calculate">=</button>
+    </div>
+  </div>
+
+  <script>
+    // Calculator logic
+    (function(){
+      const display = document.getElementById('display');
+      let expr = '';
+
+      function updateDisplay(v){
+        display.textContent = v === '' ? '0' : v;
+      }
+
+      function insert(char){
+        // prevent multiple leading zeros
+        if(expr === '0' && char === '0') return;
+        // prevent multiple dots in same number
+        if(char === '.'){
+          const parts = expr.split(/[^0-9.]/);
+          const last = parts[parts.length-1];
+          if(last.includes('.')) return;
+          if(last === '') char = '0.'; // start decimal with 0.
+        }
+        expr += char;
+        updateDisplay(expr);
+      }
+
+      function clearAll(){ expr = ''; updateDisplay('0'); }
+
+      function backspace(){ expr = expr.slice(0,-1); updateDisplay(expr); }
+
+      function percent(){
+        try{
+          const value = eval(expr || '0');
+          expr = String(value/100);
+          updateDisplay(expr);
+        }catch(e){ updateDisplay('Error'); expr = ''; }
+      }
+
+      function calculate(){
+        if(!expr) return;
+        // Replace any unicode minus or multiply signs with JS operators
+        const safeExpr = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-');
+        try{
+          // eslint-disable-next-line no-eval
+          const result = Function('return ('+safeExpr+')')();
+          expr = String(result);
+          updateDisplay(expr);
+        }catch(e){ updateDisplay('Error'); expr = ''; }
+      }
+
+      document.querySelectorAll('.key').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const v = btn.dataset.value;
+          const action = btn.dataset.action;
+          if(action === 'clear') return clearAll();
+          if(action === 'back') return backspace();
+          if(action === 'calculate') return calculate();
+          if(action === 'percent') return percent();
+          if(v) return insert(v);
+        });
+      });
+
+      // Keyboard support
+      window.addEventListener('keydown', (e)=>{
+        if(e.key >= '0' && e.key <= '9') { insert(e.key); return; }
+        if(e.key === '.') { insert('.'); return; }
+        if(e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') { insert(e.key); return; }
+        if(e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculate(); return; }
+        if(e.key === 'Backspace') { backspace(); return; }
+        if(e.key === 'Escape') { clearAll(); return; }
+        if(e.key === '%') { percent(); return; }
+      });
+
+      // initialize
+      clearAll();
+    })();
+  </script>
+</body>
+</html>

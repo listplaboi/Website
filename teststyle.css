@@ -1,0 +1,79 @@
+.site-bg {
+  /* kept for compatibility if needed; preferred selector is `body` below */
+  display: block;
+}
+
+/* Apply the image to the page body so you don't need to add a class in the HTML */
+body {
+  /* fallback color while image loads */
+  background-color: #f4f4f4;
+  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-HTrwHKXiSKMW9lAdzuz30ZC0g1vyOp44Vvn4FESokzGixSGy9SrQjsNn2g&s");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* gentle overlay so text is readable and the page feels charming */
+body::before{
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(250,250,255,0.30));
+  pointer-events: none;
+  backdrop-filter: saturate(1.05) blur(4px);
+}
+
+/* Make the main content container slightly translucent with soft shadow */
+.container{
+  background: rgba(255,255,255,0.88) !important;
+  border-radius: 12px !important;
+  padding: 26px !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid rgba(10,30,60,0.04) !important;
+}
+
+/* Improve headings to match the charm */
+.container h1, .container h2, .container h3{
+  color: #0b3d91 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* Test style sheet for site buttons and utilities */
+
+/* Animated button class -- apply to <button> or <a> elements */
+.btn-animate {
+  background-color: #c2fbd7;
+  border-radius: 999px;
+  box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset, rgba(44, 187, 99, .15) 0 1px 2px, rgba(44, 187, 99, .15) 0 2px 4px, rgba(44, 187, 99, .15) 0 4px 8px;
+  color: #0b6623;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 10px 22px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 240ms ease, box-shadow 240ms ease, background-color 240ms ease;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.btn-animate:hover,
+.btn-animate:focus {
+  box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset, rgba(44,187,99,.25) 0 1px 2px, rgba(44,187,99,.25) 0 2px 4px, rgba(44,187,99,.25) 0 4px 8px;
+  transform: translateY(-4px) scale(1.03) rotate(-1deg);
+  background-color: #b7f6c9;
+  outline: none;
+}
+
+.btn-animate:active {
+  transform: translateY(-1px) scale(0.99);
+  box-shadow: rgba(44,187,99,.2) 0 -10px 8px -6px inset, rgba(0,0,0,.06) 0 2px 4px;
+}
+
+/* small utility to reset anchor-wrapped buttons */
+a .btn-animate { display: inline-block; }
